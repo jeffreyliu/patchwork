@@ -1,0 +1,3 @@
+[submodule "meyda"]
+	path = meyda
+	url = https://github.com/hughrawlinson/meyda.git
