@@ -1,0 +1,90 @@
+
+<!doctype html>
+<head></head>
+<body>
+<canvas id="osc"></canvas>
+<canvas id="fft"></canvas>
+
+<script>
+navigator.getUserMedia = (navigator.getUserMedia ||
+                          navigator.webkitGetUserMedia ||
+                          navigator.mozGetUserMedia ||
+                          navigator.msGetUserMedia);
+
+var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+var analyser = audioCtx.createAnalyser();
+analyser.minDecibels = -90;
+analyser.maxDecibels = -10;
+analyser.smoothingTimeConstant = 0.85;
+
+var oscCanvas = document.querySelector('#osc');
+var oscContext = oscCanvas.getContext("2d");
+oscCanvas.setAttribute('width', 1024);
+oscCanvas.setAttribute('height', 200);
+
+var fftCanvas = document.querySelector('#fft');
+var fftContext = fftCanvas.getContext("2d");
+fftCanvas.setAttribute('width', 1024);
+fftCanvas.setAttribute('height', 200);
+
+var bufferLength = 1024;
+var oscData = new Uint8Array(bufferLength);
+var fftData = new Uint8Array(bufferLength);
+
+function drawOsc(ctx, width, height) {
+  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  ctx.fillRect(0, 0, width, height);
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = 'rgb(0,255,0)';
+  ctx.beginPath();
+  var dx = width / bufferLength;
+  var y = oscData[0] / 256 * height;
+  ctx.moveTo(0, y);
+  for (var i = 1; i < bufferLength; ++i) {
+    y = oscData[i] / 256 * height;
+    ctx.lineTo(i * dx, y);
+  }
+  ctx.stroke();
+}
+
+function drawFFT(ctx, width, height) {
+  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  ctx.fillRect(0, 0, width, height);
+  var barWidth = (width / bufferLength) * 2.5;
+  var barHeight;
+  for (var i = 0; i < bufferLength; ++i) {
+    barHeight = fftData[i];
+    ctx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)';
+    ctx.fillRect(i * (barWidth + 1), height - barHeight, barWidth, barHeight);
+  }
+}
+
+function draw() {
+  
+  requestAnimationFrame(draw);
+
+  analyser.getByteTimeDomainData(oscData);
+  analyser.getByteFrequencyData(fftData);
+  
+  // canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  drawOsc(oscContext, oscCanvas.width, oscCanvas.height);
+  drawFFT(fftContext, fftCanvas.width, fftCanvas.height);
+}
+
+navigator.getUserMedia ({audio: true},
+  function(stream) {
+     var source = audioCtx.createMediaStreamSource(stream);
+     source.connect(analyser);
+     analyser.connect(audioCtx.destination);
+     draw();
+  },
+  function(err) {
+     console.log('The following getUserMedia() error occured: ' + err);
+  }
+);
+
+</script>
+</body>
+</html>
