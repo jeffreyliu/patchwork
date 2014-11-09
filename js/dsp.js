@@ -46,7 +46,6 @@ function rms(array) {
 }
 
 var dsp = {
-  
   // average abs value of buffer amplitude to get volume in dB
   // input: Float32Array, output: float
   volume: function(amplitude) {

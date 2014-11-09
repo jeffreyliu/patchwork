@@ -62,8 +62,8 @@ function enableMicrophone() {
       attempt.source = audioContext.createMediaStreamSource(stream);
       attempt.source.connect(attempt.analyser);
       attempt.source.connect(audioContext.destination);
-      viz.analyser = attempt.analyser;
-      viz.start();
+      // viz.analyser = attempt.analyser;
+      // viz.start();
     },
     function(e) { 
       console.log(e); 

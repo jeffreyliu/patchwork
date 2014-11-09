@@ -73,6 +73,7 @@ target.processAudioBuffer = function() {
   target.processing = true;
   target.initSpectrogram();
   target.playAudioBuffer(target.processing);
+  attempt.initialize();
 }
 
 // play the target audio without re-processing by creating a new buffersource
@@ -120,6 +121,9 @@ target.playAudioBuffer = function(process) {
 // attempt object
 var attempt = {};
 
+// Difference in current attempt and target
+var residual = {};
+
 // audio buffer for attempt sample
 attempt.audioBuffer = null;
 
@@ -131,7 +135,7 @@ attempt.active = false;
 
 // analyser node for attempt
 attempt.analyser = audioContext.createAnalyser();
-attempt.analyser.smoothingTimeConstant = 0.8;
+attempt.analyser.smoothingTimeConstant = 0.0;
 attempt.analyser.fftSize = bufferLength * 2;
 attempt.analyser.minDecibels = minDecibels;
 attempt.analyser.maxDecibles = maxDecibles;
@@ -146,20 +150,34 @@ attempt.trends = {
   centroid: []
 };
 
-// pre-allocate arrays for analyser output
-attempt.freq = new Uint8Array(frequencyBinCount);
-attempt.ampl = new Float32Array(bufferLength);
 
-attempt.processAudioBuffer = function() {
-
+attempt.initialize = function() {
+  attempt.spectrum = [];
+  residual.spectrum = [];
+  for (var i=0; i<target.numFrames; ++i){
+    attempt.spectrum[i] = new Uint8Array(frequencyBinCount);
+    residual.spectrum[i] = new Uint8Array(frequencyBinCount);
+  }
+  residual.initSpectrogram();
+  attempt.initSpectrogram();
 }
 
 // callback function for attempt SPN
 attempt.spn.onaudioprocess = function() {
-  if (attempt.processing == false) return; 
-  target.analyser.getByteFrequencyData(target.spectrum[playheadFrame]);
-  target.trends.volume.push(dsp.volume(target.spectrum[playheadFrame]));
-  target.trends.centroid.push(dsp.centroid(target.spectrum[playheadFrame]));
+  if (target.processing == true) return; //Only do stuff if target audio is done processing
+  attempt.analyser.getByteFrequencyData(attempt.spectrum[playheadFrame]);
+  attempt.trends.volume.push(dsp.volume(attempt.spectrum[playheadFrame]));
+  attempt.trends.centroid.push(dsp.centroid(attempt.spectrum[playheadFrame]));
   playheadFrame = playheadFrame + 1;
   playheadFrame = playheadFrame % target.numFrames;
 }
+
+
+attempt.playAudioBuffer = function(process) {
+ 
+}
+
+//Residual
+
+
+
