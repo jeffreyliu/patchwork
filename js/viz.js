@@ -1,7 +1,9 @@
-target.canvas = document.createElement('canvas');
-target.spectrogramCanvas = document.getElementById('target-spectrogram'); 
-attempt.canvas = document.createElement('canvas');
-attempt.spectrogramCanvas = document.getElementById('attempt-spectrogram'); 
+target.canvas    = document.createElement('canvas');
+attempt.canvas   = document.createElement('canvas');
+residual.canvas  = document.createElement('canvas');
+target.spectrogramCanvas   = document.getElementById('target-spectrogram'); 
+attempt.spectrogramCanvas  = document.getElementById('attempt-spectrogram'); 
+residual.spectrogramCanvas = document.getElementById('residual-spectrogram'); 
 
 target.fftCanvas = document.getElementById('target-fft');
 target.oscCanvas = document.getElementById('target-osc');
@@ -22,7 +24,7 @@ var cmap = {
   }
 };
 
-target.initSpectrogram = function() {
+function initSpectrograms() {
   target.width = Math.floor(target.audioBuffer.length / bufferLength);
   target.height = target.analyser.frequencyBinCount;
   target.canvas.width = target.width;
@@ -52,6 +54,22 @@ target.initSpectrogram = function() {
   attempt.spectrogramContext.setTransform(1, 0, 0, 1, 0, 0);
   attempt.spectrogramContext.scale(attempt.spectrogramCanvas.width / attempt.width, 
                                    attempt.spectrogramCanvas.height / attempt.height);
+
+  // now do it for residual
+  residual.width = Math.floor(target.audioBuffer.length / bufferLength);
+  residual.height = attempt.analyser.frequencyBinCount;
+  residual.canvas.width = residual.width;
+  residual.canvas.height = residual.height;
+  residual.context = residual.canvas.getContext('2d');
+  residual.image = residual.context.createImageData(residual.width, residual.height);
+  for (var i = 3; i < residual.width * residual.height * 4; i += 4)
+    residual.image.data[i] = 255; // set alpha to 255
+  residual.spectrogramCanvas.width = 800;
+  residual.spectrogramCanvas.height = 180;
+  residual.spectrogramContext = residual.spectrogramCanvas.getContext('2d');
+  residual.spectrogramContext.setTransform(1, 0, 0, 1, 0, 0);
+  residual.spectrogramContext.scale(residual.spectrogramCanvas.width / residual.width, 
+                                   residual.spectrogramCanvas.height / residual.height);
   
 }
 
@@ -93,6 +111,27 @@ attempt.drawSpectrum = function() {
   }
   attempt.context.putImageData(attempt.image, 0, 0);
   attempt.spectrogramContext.drawImage(attempt.canvas, 0, 0);
+}
+
+residual.drawSpectrum = function() {
+  var x = playheadFrame;
+  var y, h, h0 = 0;
+  var base, intensity, diff;
+  for (var i = 1; i < residual.height; ++i) {
+    h = Math.floor(residual.height * (Math.log(i) / Math.log(residual.height)));
+    for (var hi = h0; hi <= h; ++hi) {
+      y = residual.height - hi;
+      base = 4 * (y * residual.width + x);
+      diff = attempt.spectrum[playheadFrame][i] - target.spectrum[playheadFrame][i];
+      intensity = (diff / 255) / 2;
+      residual.image.data[base + 0] = cmap.jet.r(intensity) * 255;
+      residual.image.data[base + 1] = cmap.jet.g(intensity) * 255;
+      residual.image.data[base + 2] = cmap.jet.b(intensity) * 255;
+    }
+    h0 = h;
+  }
+  residual.context.putImageData(residual.image, 0, 0);
+  residual.spectrogramContext.drawImage(residual.canvas, 0, 0);
 }
 
 target.drawFFT = function() {

@@ -11,6 +11,8 @@ var minDecibels = -110;
 var maxDecibles = -10;
 var playheadFrame = 0;
 
+var residual = {};
+
 
 //   ______                      __ 
 //  /_  __/___ __________ ____  / /_
@@ -70,7 +72,6 @@ target.processAudioBuffer = function() {
   for (var i=0; i<target.numFrames; ++i)
     target.spectrum[i] = new Uint8Array(frequencyBinCount);
   target.processing = true;
-  target.initSpectrogram();
   
   console.log('initializing attempt');
   attempt.spectrum = [];
@@ -79,8 +80,9 @@ target.processAudioBuffer = function() {
     attempt.spectrum[i] = new Uint8Array(frequencyBinCount);
     residual.spectrum[i] = new Uint8Array(frequencyBinCount);
   }
-  // residual.initSpectrogram();
-  // attempt.initSpectrogram();
+  console.log('done');
+
+  initSpectrograms();
 
   target.playAudioBuffer(target.processing);
 }
@@ -169,6 +171,7 @@ attempt.spn.onaudioprocess = function() {
   playheadFrame = playheadFrame + 1;
   playheadFrame = playheadFrame % target.numFrames;
   attempt.drawSpectrum();
+  residual.drawSpectrum();
 }
 
 
