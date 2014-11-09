@@ -7,6 +7,8 @@ var bufferLength = 512;
 var fftSize = bufferLength * 2;
 var frequencyBinCount;
 var smoothingTimeConstant = 0.0;
+var minDecibels = -110;
+var maxDecibles = -10;
 
 
 //   ______                      __ 
@@ -29,6 +31,8 @@ target.source = null;
 target.analyser = audioContext.createAnalyser();
 target.analyser.smoothingTimeConstant = 0.8;
 target.analyser.fftSize = fftSize;
+target.analyser.minDecibels = minDecibels;
+target.analyser.maxDecibles = maxDecibles;
 frequencyBinCount = target.analyser.frequencyBinCount;
 
 // script processor node for target
@@ -42,13 +46,13 @@ target.trends = {
 };
 
 // pre-allocate arrays for analyser output
-target.freq = new Float32Array(frequencyBinCount);
+target.freq = new Uint8Array(frequencyBinCount);
 target.ampl = new Float32Array(bufferLength);
 
 // callback function for target SPN
 target.spn.onaudioprocess = function() {
   if (target.processing == false) return; 
-  target.analyser.getFloatFrequencyData(target.freq);
+  target.analyser.getByteFrequencyData(target.freq);
   target.trends.volume.push(dsp.volume(target.freq));
   target.trends.centroid.push(dsp.centroid(target.freq));
 }
@@ -114,6 +118,8 @@ attempt.source = null;
 attempt.analyser = audioContext.createAnalyser();
 attempt.analyser.smoothingTimeConstant = 0.8;
 attempt.analyser.fftSize = bufferLength * 2;
+attempt.analyser.minDecibels = minDecibels;
+attempt.analyser.maxDecibles = maxDecibles;
 frequencyBinCount = attempt.analyser.frequencyBinCount;
 
 // script processor node for attempt
@@ -126,7 +132,7 @@ attempt.trends = {
 };
 
 // pre-allocate arrays for analyser output
-attempt.freq = new Float32Array(frequencyBinCount);
+attempt.freq = new Uint8Array(frequencyBinCount);
 attempt.ampl = new Float32Array(bufferLength);
 
 // callback function for attempt SPN
