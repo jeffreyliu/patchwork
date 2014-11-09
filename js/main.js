@@ -28,7 +28,7 @@ target.source = null;
 // analyser node for target
 target.analyser = audioContext.createAnalyser();
 target.analyser.smoothingTimeConstant = 0.8;
-target.analyser.fftSize = bufferLength * 2;
+target.analyser.fftSize = fftSize;
 frequencyBinCount = target.analyser.frequencyBinCount;
 
 // script processor node for target

@@ -37,12 +37,26 @@ function spread(array) {
   return total / sum(array);
 }
 
+function rms(array) {
+  var n = array.length;
+  var total = 0;
+  for (var i = 0; i < n; ++i)
+    total += Math.pow(array[i],2);
+  return Math.sqrt(total/n);
+}
+
 var dsp = {
   
-  // average fft bins to get volume in dB
+  // average abs value of buffer amplitude to get volume in dB
   // input: Float32Array, output: float
-  volume: function(freq) {
-    return mean(freq);
+  volume: function(amplitude) {
+    return mean(Math.abs(amplitude));
+  },
+
+  // get rms estimate of energy, normalized by buffer length
+  // input buffer, output: float
+  rms: function(buffer) {
+    return rms(buffer);
   },
 
   // "center of mass" of fft bins
