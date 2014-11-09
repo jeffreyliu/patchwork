@@ -3,14 +3,16 @@
 <head>
 <title>mhd2014</title>
 <style>
-body { background: #000; color: #fff; }
-canvas { background: #ccc; }
+body { background: #000; color: #fff; font-family: sans-serif;}
+canvas { background: #ccc; display: block; float: left;}
+span.label { display:block; width: 70px; text-align:right; padding-right: 10px; line-height: 180px; float:left; }
+br { clear: both; }
 </style>
 </head>
 <body>
 
 <div id="prompt">
-  Drop mp3 of target sample here or <button type="button" onclick="loadSampleAudio('targetLonger.wav');">load sample mp3</button>
+  Drop mp3 of target sample here or <button type="button" onclick="loadSampleAudio('targetPad.wav');">load sample mp3</button>
 </div>
 
 <div id="controls">
@@ -19,15 +21,15 @@ canvas { background: #ccc; }
 </div>
 
 <div id="target">
-  <canvas id="target-spectrogram"></canvas>
+  <span class="label">Target</span><canvas id="target-spectrogram"></canvas>
 </div>
-
+<br />
 <div id="attempt">
-  <canvas id="attempt-spectrogram"></canvas>
+  <span class="label">Attempt</span><canvas id="attempt-spectrogram"></canvas>
 </div>
-
+<br />
 <div id="residual">
-  <canvas id="residual-spectrogram"></canvas>
+  <span class="label">Residual</span><canvas id="residual-spectrogram"></canvas>
 </div>
 
 <!--
