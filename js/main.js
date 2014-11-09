@@ -169,10 +169,9 @@ attempt.spn.onaudioprocess = function() {
   if (target.processing == true) return; //Only do stuff if target audio is done processing
   attempt.analyser.getByteFrequencyData(attempt.spectrum[playheadFrame]);
   attempt.drawSpectrum();
+  residual.drawSpectrum();
   playheadFrame = playheadFrame + 1;
   playheadFrame = playheadFrame % target.numFrames;
-  attempt.drawSpectrum();
-  residual.drawSpectrum();
 }
 
 

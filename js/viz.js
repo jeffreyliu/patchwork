@@ -116,17 +116,18 @@ attempt.drawSpectrum = function() {
 residual.drawSpectrum = function() {
   var x = playheadFrame;
   var y, h, h0 = 0;
-  var base, intensity, diff;
+  var base, intensity, diff, fade;
   for (var i = 1; i < residual.height; ++i) {
     h = Math.floor(residual.height * (Math.log(i) / Math.log(residual.height)));
     for (var hi = h0; hi <= h; ++hi) {
       y = residual.height - hi;
       base = 4 * (y * residual.width + x);
       diff = attempt.spectrum[playheadFrame][i] - target.spectrum[playheadFrame][i];
-      intensity = (diff / 255) / 2;
-      residual.image.data[base + 0] = cmap.jet.r(intensity) * 255;
-      residual.image.data[base + 1] = cmap.jet.g(intensity) * 255;
-      residual.image.data[base + 2] = cmap.jet.b(intensity) * 255;
+      intensity = (diff / 255);
+      fade = Math.abs(intensity);
+      residual.image.data[base + 0] = fade * cmap.jet.r(intensity) * 255;
+      residual.image.data[base + 1] = fade * Math.abs(intensity) * cmap.jet.g(intensity) * 255;
+      residual.image.data[base + 2] = fade * Math.abs(intensity) * cmap.jet.b(intensity) * 255;
     }
     h0 = h;
   }
