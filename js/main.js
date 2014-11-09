@@ -144,13 +144,6 @@ frequencyBinCount = attempt.analyser.frequencyBinCount;
 // script processor node for attempt
 attempt.spn = audioContext.createScriptProcessor(bufferLength, 1, 1);
 
-// collection of time-series
-attempt.trends = {
-  volume: [], 
-  centroid: []
-};
-
-
 attempt.initialize = function() {
   attempt.spectrum = [];
   residual.spectrum = [];
@@ -166,8 +159,9 @@ attempt.initialize = function() {
 attempt.spn.onaudioprocess = function() {
   if (target.processing == true) return; //Only do stuff if target audio is done processing
   attempt.analyser.getByteFrequencyData(attempt.spectrum[playheadFrame]);
-  attempt.trends.volume.push(dsp.volume(attempt.spectrum[playheadFrame]));
-  attempt.trends.centroid.push(dsp.centroid(attempt.spectrum[playheadFrame]));
+  residual.spectrum[playheadFrame] = attempt.spectrum[playheadFrame] - target.spectrum[playheadFrame];
+  attempt.drawSpectrum();
+  residual.drawSpectrum();
   playheadFrame = playheadFrame + 1;
   playheadFrame = playheadFrame % target.numFrames;
 }
