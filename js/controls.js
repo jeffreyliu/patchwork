@@ -37,6 +37,10 @@ function keypress(evt) {
   evt.stopPropagation();
   evt.preventDefault();
   if (evt.keyCode == 32){
+    if (evt.stopPropagation) {
+      evt.stopPropagation();
+      evt.preventDefault();
+     }
     if (attempt.stopped == false){
       attempt.stopped = true;
       playheadFrame = 0;

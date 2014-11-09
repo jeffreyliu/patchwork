@@ -86,9 +86,6 @@ target.playAudioBuffer = function(process) {
   target.source.connect(audioContext.destination);
   target.source.connect(target.analyser);
   if (process) {
-    // reset trends
-    target.trends.volume = [];
-    target.trends.centroid = [];
     target.source.connect(target.spn);
     target.spn.connect(audioContext.destination); // connect to destination, else it isn't called
   } else {
