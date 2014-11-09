@@ -2,6 +2,7 @@
 // event listeners
 document.addEventListener('dragover', dragover, false);
 document.addEventListener('drop', drop, false);
+window.addEventListener( 'keypress', keypress, false )
 var prompt = document.getElementById('prompt');
 
 // stop event propagation (important!)
@@ -30,6 +31,19 @@ function drop(evt) {
     });
   }
   reader.readAsArrayBuffer(droppedFiles[0]);
+}
+
+function keypress(evt) {
+  evt.stopPropagation();
+  evt.preventDefault();
+  if (evt.keyCode == 32){
+    if (attempt.stopped == false){
+      attempt.stopped == true;
+      playheadFrame = 0;
+    } else {
+      attempt.stopped == false;
+    }
+  }
 }
 
 // load sample audio asynchronously into targetAudioBuffer
