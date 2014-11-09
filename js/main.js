@@ -57,6 +57,7 @@ target.ampl = new Float32Array(bufferLength);
 target.spn.onaudioprocess = function() {
   if (target.processing == false) return; 
   target.analyser.getByteFrequencyData(target.spectrum[playheadFrame]);
+  target.drawSpectrum();
   target.trends.volume.push(dsp.volume(target.spectrum[playheadFrame]));
   target.trends.centroid.push(dsp.centroid(target.spectrum[playheadFrame]));
   playheadFrame = playheadFrame + 1;
@@ -64,7 +65,7 @@ target.spn.onaudioprocess = function() {
 }
 
 // call this function when updating targetAudioBuffer, e.g., when loading a new target sample
-function processTargetAudioBuffer() {
+target.processAudioBuffer = function() {
   target.numFrames = Math.ceil(target.audioBuffer.length/bufferLength);
   target.spectrum = [];
   for (var i=0; i<target.numFrames; ++i)
@@ -75,7 +76,7 @@ function processTargetAudioBuffer() {
 // play the target audio without re-processing by creating a new buffersource
 // and constructing the web audio graph, and connecting the relevant script processing nodes
 // and setting the callback functions to clean up after playing the buffer
-function playTargetAudioBuffer(process) {
+target.playAudioBuffer = function(process) {
   prompt.innerHTML = (process) ? 'Processing target sample' : 'Playing target sample';
   if (target.source) {
     target.source.stop(0.0);
@@ -88,10 +89,8 @@ function playTargetAudioBuffer(process) {
     // reset trends
     target.trends.volume = [];
     target.trends.centroid = [];
-
     target.source.connect(target.spn);
     target.spn.connect(audioContext.destination); // connect to destination, else it isn't called
-
   } else {
     target.processing = false;
   }
@@ -126,6 +125,9 @@ attempt.audioBuffer = null;
 // audio source for attempt sample, e.g., a buffer source node
 attempt.source = null;
 
+// is the user actively trying to input a sound?
+attempt.active = false;
+
 // analyser node for attempt
 attempt.analyser = audioContext.createAnalyser();
 attempt.analyser.smoothingTimeConstant = 0.8;
@@ -147,7 +149,16 @@ attempt.trends = {
 attempt.freq = new Uint8Array(frequencyBinCount);
 attempt.ampl = new Float32Array(bufferLength);
 
+attempt.processAudioBuffer = function() {
+
+}
+
 // callback function for attempt SPN
 attempt.spn.onaudioprocess = function() {
-
+  if (attempt.processing == false) return; 
+  target.analyser.getByteFrequencyData(target.spectrum[playheadFrame]);
+  target.trends.volume.push(dsp.volume(target.spectrum[playheadFrame]));
+  target.trends.centroid.push(dsp.centroid(target.spectrum[playheadFrame]));
+  playheadFrame = playheadFrame + 1;
+  playheadFrame = playheadFrame % target.numFrames;
 }

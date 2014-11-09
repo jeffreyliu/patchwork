@@ -23,7 +23,7 @@ function drop(evt) {
     var data = fileEvent.target.result;
     audioContext.decodeAudioData(data, function(buffer) {
       target.audioBuffer = buffer;
-      processTargetAudioBuffer();
+      target.processAudioBuffer();
     }, function(e) {
       prompt.innerHTML = 'Cannot decode mp3';
       console.log(e);
@@ -41,7 +41,7 @@ function loadSampleAudio(url) {
   request.onload = function() {
     audioContext.decodeAudioData(request.response, function(buffer) {
       target.audioBuffer = buffer;
-      processTargetAudioBuffer();
+      target.processAudioBuffer();
     }, function(e) {
       prompt.innerHTML = 'Error loading mp3';
       console.log(e);
