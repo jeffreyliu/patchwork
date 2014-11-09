@@ -45,16 +45,6 @@ frequencyBinCount = target.analyser.frequencyBinCount;
 target.spn = audioContext.createScriptProcessor(bufferLength, 1, 1);
 target.processing = false; 
 
-// collection of time-series
-target.trends = {
-  volume: [], 
-  centroid: []
-};
-
-// pre-allocate arrays for analyser output
-target.freq = new Uint8Array(frequencyBinCount);
-target.ampl = new Float32Array(bufferLength);
-
 // callback function for target SPN
 target.spn.onaudioprocess = function() {
   if (target.processing == false) return; 
@@ -71,8 +61,6 @@ target.processAudioBuffer = function() {
   target.spectrum = [];
   for (var i=0; i<target.numFrames; ++i)
     target.spectrum[i] = new Uint8Array(frequencyBinCount);
-  target.processing = true;
-  
   console.log('initializing attempt');
   attempt.spectrum = [];
   residual.spectrum = [];
@@ -82,10 +70,8 @@ target.processAudioBuffer = function() {
     residual.spectrum[i] = new Float32Array(frequencyBinCount);
   }
   console.log('done');
-
   initSpectrograms();
-
-  target.playAudioBuffer(target.processing);
+  target.playAudioBuffer(true);
 }
 
 // play the target audio without re-processing by creating a new buffersource
@@ -101,9 +87,6 @@ target.playAudioBuffer = function(process) {
   target.source.connect(audioContext.destination);
   target.source.connect(target.analyser);
   if (process) {
-    // reset trends
-    target.trends.volume = [];
-    target.trends.centroid = [];
     target.source.connect(target.spn);
     target.spn.connect(audioContext.destination); // connect to destination, else it isn't called
   } else {
@@ -118,13 +101,12 @@ target.playAudioBuffer = function(process) {
     target.processing = false;
     prompt.innerHTML = 'Ready';
     target.source.stop(0.0);
-    playheadFrame = 0;
+    
     target.source.disconnect();
-    viz.stop();
+    playheadFrame = 0;
   }
+  target.processing = process;
   target.source.start(0.0);
-  viz.analyser = target.analyser;
-  viz.start();
 }
 
 //     ___   __  __                       __ 
@@ -137,7 +119,6 @@ target.playAudioBuffer = function(process) {
 // attempt object
 var attempt = {};
 
-
 // audio buffer for attempt sample
 attempt.audioBuffer = null;
 
@@ -145,7 +126,6 @@ attempt.audioBuffer = null;
 attempt.source = null;
 
 // is the user actively trying to input a sound?
-attempt.active = false;
 attempt.stopped = false;
 
 // analyser node for attempt
@@ -168,7 +148,6 @@ attempt.initialize = function() {
   attempt.initSpectrogram();
 }
 
-
 // callback function for attempt SPN
 attempt.spn.onaudioprocess = function() {
   if (target.processing == true) return; //Only do stuff if target audio is done processing
@@ -183,18 +162,10 @@ attempt.spn.onaudioprocess = function() {
     residual.drawSpectrum();
     // residual.drawSummary();
     playheadFrame = playheadFrame + 1;
-    if (playheadFrame > target.numFrames) {
-      
-    }
     playheadFrame = playheadFrame % target.numFrames;
   }
 }
 
-attempt.playAudioBuffer = function(process) {
- 
-}
-
-//Residual
 
 
 
