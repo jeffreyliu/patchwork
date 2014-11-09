@@ -2,16 +2,27 @@
 <html>
 <head>
 <title>mhd2014</title>
+<style>
+canvas { background: #ccc; }
+</style>
 </head>
 <body>
 
 <div id="prompt">
-  Drop mp3 of target sample here or <button type="button" onclick="loadSampleAudio('strings.mp3');">load sample mp3</button>
+  Drop mp3 of target sample here or <button type="button" onclick="loadSampleAudio('target.wav');">load sample mp3</button>
 </div>
 
 <div id="controls">
-  <button type="button" onclick="playTargetAudioBuffer(false);">Replay target sample</button>
+  <button type="button" onclick="target.processing=false;target.playAudioBuffer(false);playheadFrame=0;">Replay target sample</button>
   <button type="button" onclick="enableMicrophone();">Enable microphone input</button>
+</div>
+
+<div id="target">
+  <canvas id="target-spectrogram"></canvas>
+</div>
+
+<div id="attempt">
+  <canvas id="attempt-spectrogram"></canvas>
 </div>
 
 <h3>Oscilliscope</h3>
