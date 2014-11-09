@@ -97,14 +97,12 @@ target.playAudioBuffer = function(process) {
     target.processing = false;
     prompt.innerHTML = 'Ready';
     target.source.stop(0.0);
-    playheadFrame = 0;
+    
     target.source.disconnect();
-    viz.stop();
+    playheadFrame = 0;
   }
   target.processing = process;
   target.source.start(0.0);
-  viz.analyser = target.analyser;
-  viz.start();
 }
 
 //     ___   __  __                       __ 
