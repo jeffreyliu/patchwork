@@ -72,7 +72,7 @@ target.processAudioBuffer = function() {
     target.spectrum[i] = new Uint8Array(frequencyBinCount);
   target.processing = true;
   target.initSpectrogram();
-  playTargetAudioBuffer(target.processing);
+  target.playAudioBuffer(target.processing);
 }
 
 // play the target audio without re-processing by creating a new buffersource
