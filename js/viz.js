@@ -136,7 +136,7 @@ residual.drawSpectrum = function() {
   var ctx = residual.spectrogramContext;
   ctx.beginPath();
   function scale(r) {
-    return r * residual.height * 20;
+    return r * residual.height * 100;
   }
   ctx.moveTo(0, residual.height - scale(residual.error[0]));
   for (var i = 1; i < target.numFrames ; ++i) {
