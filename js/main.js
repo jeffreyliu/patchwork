@@ -33,7 +33,7 @@ target.source = null;
 
 // analyser node for target
 target.analyser = audioContext.createAnalyser();
-target.analyser.smoothingTimeConstant = 0.8;
+target.analyser.smoothingTimeConstant = smoothingTimeConstant;
 target.analyser.fftSize = fftSize;
 target.analyser.minDecibels = minDecibels;
 target.analyser.maxDecibles = maxDecibles;
@@ -58,10 +58,9 @@ target.spn.onaudioprocess = function() {
   if (target.processing == false) return; 
   target.analyser.getByteFrequencyData(target.spectrum[playheadFrame]);
   target.drawSpectrum();
-  target.trends.volume.push(dsp.volume(target.spectrum[playheadFrame]));
-  target.trends.centroid.push(dsp.centroid(target.spectrum[playheadFrame]));
+  // target.trends.volume.push(dsp.volume(target.spectrum[playheadFrame]));
+  // target.trends.centroid.push(dsp.centroid(target.spectrum[playheadFrame]));
   playheadFrame = playheadFrame + 1;
-  playheadFrame = playheadFrame % target.numFrames;
 }
 
 // call this function when updating targetAudioBuffer, e.g., when loading a new target sample
@@ -103,6 +102,7 @@ target.playAudioBuffer = function(process) {
     target.processing = false;
     prompt.innerHTML = 'Ready';
     target.source.stop(0.0);
+    playheadFrame = 0;
     target.source.disconnect();
     viz.stop();
   }
@@ -135,8 +135,8 @@ attempt.active = false;
 
 // analyser node for attempt
 attempt.analyser = audioContext.createAnalyser();
-attempt.analyser.smoothingTimeConstant = 0.0;
-attempt.analyser.fftSize = bufferLength * 2;
+attempt.analyser.smoothingTimeConstant = smoothingTimeConstant;
+attempt.analyser.fftSize = fftSize;
 attempt.analyser.minDecibels = minDecibels;
 attempt.analyser.maxDecibles = maxDecibles;
 frequencyBinCount = attempt.analyser.frequencyBinCount;
