@@ -133,8 +133,6 @@ target.playAudioBuffer = function(process) {
 // attempt object
 var attempt = {};
 
-// Difference in current attempt and target
-var residual = {};
 
 // audio buffer for attempt sample
 attempt.audioBuffer = null;
@@ -156,18 +154,21 @@ frequencyBinCount = attempt.analyser.frequencyBinCount;
 // script processor node for attempt
 attempt.spn = audioContext.createScriptProcessor(bufferLength, 1, 1);
 
-// collection of time-series
-attempt.trends = {
-  volume: [], 
-  centroid: []
-};
+attempt.initialize = function() {
+  attempt.spectrum = [];
+  residual.spectrum = [];
+  for (var i=0; i<target.numFrames; ++i){
+    attempt.spectrum[i] = new Uint8Array(frequencyBinCount);
+  }
+  attempt.initSpectrogram();
+}
+
 
 // callback function for attempt SPN
 attempt.spn.onaudioprocess = function() {
   if (target.processing == true) return; //Only do stuff if target audio is done processing
   attempt.analyser.getByteFrequencyData(attempt.spectrum[playheadFrame]);
-  attempt.trends.volume.push(dsp.volume(attempt.spectrum[playheadFrame]));
-  attempt.trends.centroid.push(dsp.centroid(attempt.spectrum[playheadFrame]));
+  attempt.drawSpectrum();
   playheadFrame = playheadFrame + 1;
   playheadFrame = playheadFrame % target.numFrames;
   attempt.drawSpectrum();
