@@ -71,6 +71,7 @@ function loadSampleAudio(url) {
 // create a new audio source using getUserMedia()
 function enableMicrophone() {
   document.getElementById("micbutton").disabled = true; 
+
   navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia);
   navigator.getUserMedia ({audio: true},
     function(stream) {
@@ -85,6 +86,7 @@ function enableMicrophone() {
       attempt.source.connect(audioContext.destination);
       // viz.analyser = attempt.analyser;
       // viz.start();
+      document.getElementById("micbutton").innerHTML = 'Microphone enabled';
     },
     function(e) { 
       console.log(e); 
