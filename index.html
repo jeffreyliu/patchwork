@@ -1,24 +1,35 @@
-<!doctype html>
-<html>
-<head>
-<title>mhd2014</title>
-<style>
-body { background: #000; color: #fff; font-family: sans-serif;}
-canvas { background: #ccc; display: block; float: left;}
-span.label { display:block; width: 70px; text-align:right; padding-right: 10px; line-height: 180px; float:left; }
-br { clear: both; }
-</style>
-</head>
-<body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Påtchwørk</title> 
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">  
+    <link rel="stylesheet" href="style.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> 
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <style>
+      body { background: #000; background-size: 100% auto; color: #fff; font-family: sans-serif;}
+      canvas { background: #333; display: block; float: left; height: 180px;}
+      span.label { display:block; width: 50px; text-align:right; padding-right: 10px; line-height: 180px; float:left; }
+      br { clear: both; }
+      #prompt { float: right;}
+      #controls { display: none; }
+    </style>
+  </head>
+  <body>  
+  <div class="container" role="main">
+  <h2>Påtchwørk
+  <div id="controls" style="float: right">
+  <button type="button" class="btn btn-primary" onclick="target.processing=false;target.playAudioBuffer(false);playheadFrame=0;">Replay target sample</button>
+  <button type="button" class="btn btn-primary" onclick="enableMicrophone();">Enable microphone input</button>
+  </div>
+</h2>
 
 <div id="prompt">
-  Drop mp3 of target sample here or <button type="button" onclick="loadSampleAudio('targetPad.wav');">load sample mp3</button>
+  Drop mp3 of target sample here or <button type="button" class="btn btn-primary" onclick="loadSampleAudio('targetPad.wav');">load sample mp3</button>
 </div>
 
-<div id="controls">
-  <button type="button" onclick="target.processing=false;target.playAudioBuffer(false);playheadFrame=0;">Replay target sample</button>
-  <button type="button" onclick="enableMicrophone();">Enable microphone input</button>
-</div>
 
 <div id="target">
   <span class="label">Target</span><canvas id="target-spectrogram"></canvas>
@@ -30,6 +41,8 @@ br { clear: both; }
 <br />
 <div id="residual">
   <span class="label">Residual</span><canvas id="residual-spectrogram"></canvas>
+</div>
+
 </div>
 
 <!--
@@ -46,5 +59,6 @@ br { clear: both; }
 <script src="js/dsp.js"></script>
 <script src="js/main.js"></script>
 <script src="js/viz.js"></script>
+
 </body>
 </html>

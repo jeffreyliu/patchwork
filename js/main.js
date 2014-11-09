@@ -76,6 +76,7 @@ target.processAudioBuffer = function() {
   console.log('initializing attempt');
   attempt.spectrum = [];
   residual.spectrum = [];
+  residual.error = new Float32Array(target.numFrames);
   for (var i=0; i<target.numFrames; ++i){
     attempt.spectrum[i] = new Uint8Array(frequencyBinCount);
     residual.spectrum[i] = new Float32Array(frequencyBinCount);
@@ -111,6 +112,9 @@ target.playAudioBuffer = function(process) {
   target.source.buffer = target.audioBuffer;
   target.source.loop = false;
   target.source.onended = function() {
+    // show controls
+    document.getElementById("controls").style.display = "block";
+    
     target.processing = false;
     prompt.innerHTML = 'Ready';
     target.source.stop(0.0);
@@ -173,6 +177,7 @@ attempt.spn.onaudioprocess = function() {
     attempt.analyser.getByteFrequencyData(attempt.spectrum[playheadFrame]);
     for (var i = 0; i < frequencyBinCount; ++i) {
       residual.spectrum[playheadFrame][i] = (attempt.spectrum[playheadFrame][i] - target.spectrum[playheadFrame][i]) / 255;
+      residual.error[playheadFrame] = Math.pow(residual.spectrum[playheadFrame][i] / 255, 2);
     }
     attempt.drawSpectrum();
     residual.drawSpectrum();

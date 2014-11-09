@@ -119,25 +119,30 @@ residual.drawSpectrum = function() {
   var base, intensity, diff, fade, error;
   for (var i = 1; i < residual.height; ++i) {
     h = Math.floor(residual.height * (Math.log(i) / Math.log(residual.height)));
+    diff = attempt.spectrum[playheadFrame][i] - target.spectrum[playheadFrame][i];
+    intensity = (diff / 255);
+    fade = Math.abs(intensity);
     for (var hi = h0; hi <= h; ++hi) {
       y = residual.height - hi;
       base = 4 * (y * residual.width + x);
-      diff = attempt.spectrum[playheadFrame][i] - target.spectrum[playheadFrame][i];
-      intensity = (diff / 255);
-      fade = Math.abs(intensity);
       residual.image.data[base + 0] = fade * cmap.jet.r(intensity) * 255;
       residual.image.data[base + 1] = fade * 255;
       residual.image.data[base + 2] = fade * cmap.jet.b(intensity) * 255;
-      // draw error
-      base = 4 * (Math.floor(fade * residual.height) + x);
-      residual.image.data[base + 0] = 255;
-      residual.image.data[base + 1] = 255;
-      residual.image.data[base + 2] = 255;
     }
     h0 = h;
   }
   residual.context.putImageData(residual.image, 0, 0);
   residual.spectrogramContext.drawImage(residual.canvas, 0, 0);
+  var ctx = residual.spectrogramContext;
+  ctx.beginPath();
+  ctx.moveTo(0, residual.height - residual.error[0]);
+  for (var i = 1; i < target.numFrames ; ++i) {
+    var x = i * residual.spectrogramCanvas.width / residual.width;
+    var y = residual.error[i] * residual.spectrogramCanvas.height / residual.height;
+    ctx.lineTo(x, residual.spectrogramCanvas.height - y);
+  }
+  ctx.strokeStyle = 'rgb(255,255,255)';
+  ctx.stroke();
 }
 
 target.drawFFT = function() {
