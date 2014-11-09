@@ -41,7 +41,7 @@ function keypress(evt) {
       attempt.stopped = true;
       playheadFrame = 0;
     } else {
-      attempt.stopped == false;
+      attempt.stopped = false;
     }
   }
 }
