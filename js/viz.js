@@ -137,8 +137,10 @@ residual.drawSpectrum = function() {
   ctx.beginPath();
   ctx.moveTo(0, residual.height - residual.error[0]);
   for (var i = 1; i < target.numFrames ; ++i) {
-    var x = i * residual.spectrogramCanvas.width / residual.width;
-    var y = residual.error[i] * residual.spectrogramCanvas.height / residual.height;
+    var x = i / target.numFrames * residual.width;
+    var y = residual.error[i] * residual.height / 255;
+    // x /= residual.spectrogramCanvas.width / residual.width;
+    // y /= residual.spectrogramCanvas.height / residual.height;
     ctx.lineTo(x, residual.spectrogramCanvas.height - y);
   }
   ctx.strokeStyle = 'rgb(255,255,255)';

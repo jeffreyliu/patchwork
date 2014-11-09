@@ -152,9 +152,10 @@ attempt.spn.onaudioprocess = function() {
   // only do stuff if not stopped
   if (attempt.stopped == false) {
     attempt.analyser.getByteFrequencyData(attempt.spectrum[playheadFrame]);
+    residual.error[playheadFrame] = 0;
     for (var i = 0; i < frequencyBinCount; ++i) {
       residual.spectrum[playheadFrame][i] = (attempt.spectrum[playheadFrame][i] - target.spectrum[playheadFrame][i]) / 255;
-      residual.error[playheadFrame] = Math.pow(residual.spectrum[playheadFrame][i] / 255, 2);
+      residual.error[playheadFrame] += Math.pow(residual.spectrum[playheadFrame][i], 2);
     }
     attempt.drawSpectrum();
     residual.drawSpectrum();
