@@ -70,7 +70,8 @@ target.processAudioBuffer = function() {
   target.spectrum = [];
   for (var i=0; i<target.numFrames; ++i)
     target.spectrum[i] = new Uint8Array(frequencyBinCount);
-  playTargetAudioBuffer(true);
+  target.processing = true;
+  playTargetAudioBuffer(target.processing);
 }
 
 // play the target audio without re-processing by creating a new buffersource
@@ -103,7 +104,6 @@ target.playAudioBuffer = function(process) {
     target.source.disconnect();
     viz.stop();
   }
-  target.processing = true;
   target.source.start(0.0);
   viz.analyser = target.analyser;
   viz.start();
