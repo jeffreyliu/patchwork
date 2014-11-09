@@ -56,15 +56,19 @@ target.ampl = new Float32Array(bufferLength);
 // callback function for target SPN
 target.spn.onaudioprocess = function() {
   if (target.processing == false) return; 
-  target.analyser.getByteFrequencyData(target.freq);
-  target.trends.volume.push(dsp.volume(target.freq));
-  target.trends.centroid.push(dsp.centroid(target.freq));
-  target.numFrames = Math.ceil(target.audioBuffer.length/target.audioBuffer.sampleRate);
+  target.analyser.getByteFrequencyData(target.spectrum[playheadFrame]);
+  target.trends.volume.push(dsp.volume(target.spectrum[playheadFrame]));
+  target.trends.centroid.push(dsp.centroid(target.spectrum[playheadFrame]));
   playheadFrame = playheadFrame + 1;
+  playheadFrame = playheadFrame % target.numFrames;
 }
 
 // call this function when updating targetAudioBuffer, e.g., when loading a new target sample
 function processTargetAudioBuffer() {
+  target.numFrames = Math.ceil(target.audioBuffer.length/bufferLength);
+  target.spectrum = [];
+  for (var i=0; i<target.numFrames; ++i)
+    target.spectrum[i] = new Uint8Array(frequencyBinCount);
   playTargetAudioBuffer(true);
 }
 
@@ -84,6 +88,7 @@ function playTargetAudioBuffer(process) {
     // reset trends
     target.trends.volume = [];
     target.trends.centroid = [];
+
     target.source.connect(target.spn);
     target.spn.connect(audioContext.destination); // connect to destination, else it isn't called
 
