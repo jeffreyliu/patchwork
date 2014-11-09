@@ -71,8 +71,18 @@ target.processAudioBuffer = function() {
     target.spectrum[i] = new Uint8Array(frequencyBinCount);
   target.processing = true;
   target.initSpectrogram();
+  
+  console.log('initializing attempt');
+  attempt.spectrum = [];
+  residual.spectrum = [];
+  for (var i=0; i<target.numFrames; ++i){
+    attempt.spectrum[i] = new Uint8Array(frequencyBinCount);
+    residual.spectrum[i] = new Uint8Array(frequencyBinCount);
+  }
+  // residual.initSpectrogram();
+  // attempt.initSpectrogram();
+
   target.playAudioBuffer(target.processing);
-  attempt.initialize();
 }
 
 // play the target audio without re-processing by creating a new buffersource
@@ -121,8 +131,6 @@ target.playAudioBuffer = function(process) {
 // attempt object
 var attempt = {};
 
-// Difference in current attempt and target
-var residual = {};
 
 // audio buffer for attempt sample
 attempt.audioBuffer = null;
@@ -149,21 +157,19 @@ attempt.initialize = function() {
   residual.spectrum = [];
   for (var i=0; i<target.numFrames; ++i){
     attempt.spectrum[i] = new Uint8Array(frequencyBinCount);
-    residual.spectrum[i] = new Uint8Array(frequencyBinCount);
   }
-  residual.initSpectrogram();
   attempt.initSpectrogram();
 }
+
 
 // callback function for attempt SPN
 attempt.spn.onaudioprocess = function() {
   if (target.processing == true) return; //Only do stuff if target audio is done processing
   attempt.analyser.getByteFrequencyData(attempt.spectrum[playheadFrame]);
-  residual.spectrum[playheadFrame] = attempt.spectrum[playheadFrame] - target.spectrum[playheadFrame];
   attempt.drawSpectrum();
-  residual.drawSpectrum();
   playheadFrame = playheadFrame + 1;
   playheadFrame = playheadFrame % target.numFrames;
+  attempt.drawSpectrum();
 }
 
 

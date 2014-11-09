@@ -1,5 +1,7 @@
 target.canvas = document.createElement('canvas');
 target.spectrogramCanvas = document.getElementById('target-spectrogram'); 
+attempt.canvas = document.createElement('canvas');
+attempt.spectrogramCanvas = document.getElementById('attempt-spectrogram'); 
 
 target.fftCanvas = document.getElementById('target-fft');
 target.oscCanvas = document.getElementById('target-osc');
@@ -35,6 +37,22 @@ target.initSpectrogram = function() {
   target.spectrogramContext.setTransform(1, 0, 0, 1, 0, 0);
   target.spectrogramContext.scale(target.spectrogramCanvas.width / target.width, 
                                   target.spectrogramCanvas.height / target.height);
+  // now do it for attempt
+  attempt.width = Math.floor(target.audioBuffer.length / bufferLength);
+  attempt.height = attempt.analyser.frequencyBinCount;
+  attempt.canvas.width = attempt.width;
+  attempt.canvas.height = attempt.height;
+  attempt.context = attempt.canvas.getContext('2d');
+  attempt.image = attempt.context.createImageData(attempt.width, attempt.height);
+  for (var i = 3; i < attempt.width * attempt.height * 4; i += 4)
+    attempt.image.data[i] = 255; // set alpha to 255
+  attempt.spectrogramCanvas.width = 800;
+  attempt.spectrogramCanvas.height = 180;
+  attempt.spectrogramContext = attempt.spectrogramCanvas.getContext('2d');
+  attempt.spectrogramContext.setTransform(1, 0, 0, 1, 0, 0);
+  attempt.spectrogramContext.scale(attempt.spectrogramCanvas.width / attempt.width, 
+                                   attempt.spectrogramCanvas.height / attempt.height);
+  
 }
 
 target.drawSpectrum = function() {
@@ -55,6 +73,26 @@ target.drawSpectrum = function() {
   }
   target.context.putImageData(target.image, 0, 0);
   target.spectrogramContext.drawImage(target.canvas, 0, 0);
+}
+
+attempt.drawSpectrum = function() {
+  var x = playheadFrame;
+  var y, h, h0 = 0;
+  var base, intensity;
+  for (var i = 1; i < attempt.height; ++i) {
+    h = Math.floor(attempt.height * (Math.log(i) / Math.log(attempt.height)));
+    for (var hi = h0; hi <= h; ++hi) {
+      y = attempt.height - hi;
+      base = 4 * (y * attempt.width + x);
+      intensity = (attempt.spectrum[playheadFrame][i] / 255) * 2 - 1;
+      attempt.image.data[base + 0] = cmap.jet.r(intensity) * 255;
+      attempt.image.data[base + 1] = cmap.jet.g(intensity) * 255;
+      attempt.image.data[base + 2] = cmap.jet.b(intensity) * 255;
+    }
+    h0 = h;
+  }
+  attempt.context.putImageData(attempt.image, 0, 0);
+  attempt.spectrogramContext.drawImage(attempt.canvas, 0, 0);
 }
 
 target.drawFFT = function() {
