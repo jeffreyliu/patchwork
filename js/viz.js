@@ -138,7 +138,7 @@ residual.drawSpectrum = function() {
   function scale(r) {
     return r * residual.height * 20;
   }
-  ctx.moveTo(0, residual.height - scale(residual.error[0]);
+  ctx.moveTo(0, residual.height - scale(residual.error[0]));
   for (var i = 1; i < target.numFrames ; ++i) {
     var x = i / target.numFrames * residual.width;
     var y = scale(residual.error[i]);
