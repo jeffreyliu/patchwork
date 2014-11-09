@@ -71,6 +71,7 @@ target.processAudioBuffer = function() {
   for (var i=0; i<target.numFrames; ++i)
     target.spectrum[i] = new Uint8Array(frequencyBinCount);
   target.processing = true;
+  target.initSpectrogram();
   playTargetAudioBuffer(target.processing);
 }
 
