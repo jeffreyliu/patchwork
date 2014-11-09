@@ -78,7 +78,7 @@ target.processAudioBuffer = function() {
   residual.spectrum = [];
   for (var i=0; i<target.numFrames; ++i){
     attempt.spectrum[i] = new Uint8Array(frequencyBinCount);
-    residual.spectrum[i] = new Uint8Array(frequencyBinCount);
+    residual.spectrum[i] = new Float32Array(frequencyBinCount);
   }
   console.log('done');
 
@@ -142,6 +142,7 @@ attempt.source = null;
 
 // is the user actively trying to input a sound?
 attempt.active = false;
+attempt.stopped = false;
 
 // analyser node for attempt
 attempt.analyser = audioContext.createAnalyser();
@@ -167,13 +168,22 @@ attempt.initialize = function() {
 // callback function for attempt SPN
 attempt.spn.onaudioprocess = function() {
   if (target.processing == true) return; //Only do stuff if target audio is done processing
-  attempt.analyser.getByteFrequencyData(attempt.spectrum[playheadFrame]);
-  attempt.drawSpectrum();
-  residual.drawSpectrum();
-  playheadFrame = playheadFrame + 1;
-  playheadFrame = playheadFrame % target.numFrames;
+  // only do stuff if not stopped
+  if (attempt.stopped == false) {
+    attempt.analyser.getByteFrequencyData(attempt.spectrum[playheadFrame]);
+    for (var i = 0; i < frequencyBinCount; ++i) {
+      residual.spectrum[playheadFrame][i] = (attempt.spectrum[playheadFrame][i] - target.spectrum[playheadFrame][i]) / 255;
+    }
+    attempt.drawSpectrum();
+    residual.drawSpectrum();
+    // residual.drawSummary();
+    playheadFrame = playheadFrame + 1;
+    if (playheadFrame > target.numFrames) {
+      
+    }
+    playheadFrame = playheadFrame % target.numFrames;
+  }
 }
-
 
 attempt.playAudioBuffer = function(process) {
  
