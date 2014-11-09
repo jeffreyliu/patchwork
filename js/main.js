@@ -97,11 +97,9 @@ target.playAudioBuffer = function(process) {
   target.source.onended = function() {
     // show controls
     document.getElementById("controls").style.display = "block";
-    
     target.processing = false;
     prompt.innerHTML = 'Ready';
     target.source.stop(0.0);
-    
     target.source.disconnect();
     playheadFrame = 0;
   }
