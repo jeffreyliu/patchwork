@@ -45,16 +45,6 @@ frequencyBinCount = target.analyser.frequencyBinCount;
 target.spn = audioContext.createScriptProcessor(bufferLength, 1, 1);
 target.processing = false; 
 
-// collection of time-series
-target.trends = {
-  volume: [], 
-  centroid: []
-};
-
-// pre-allocate arrays for analyser output
-target.freq = new Uint8Array(frequencyBinCount);
-target.ampl = new Float32Array(bufferLength);
-
 // callback function for target SPN
 target.spn.onaudioprocess = function() {
   if (target.processing == false) return; 
@@ -130,7 +120,6 @@ target.playAudioBuffer = function(process) {
 // attempt object
 var attempt = {};
 
-
 // audio buffer for attempt sample
 attempt.audioBuffer = null;
 
@@ -160,7 +149,6 @@ attempt.initialize = function() {
   attempt.initSpectrogram();
 }
 
-
 // callback function for attempt SPN
 attempt.spn.onaudioprocess = function() {
   if (target.processing == true) return; //Only do stuff if target audio is done processing
@@ -178,11 +166,6 @@ attempt.spn.onaudioprocess = function() {
   }
 }
 
-attempt.playAudioBuffer = function(process) {
- 
-}
-
-//Residual
 
 
 
