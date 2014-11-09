@@ -70,6 +70,8 @@ function loadSampleAudio(url) {
 
 // create a new audio source using getUserMedia()
 function enableMicrophone() {
+  // get focus away from button
+  document.querySelector('body').focus();
   navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia);
   navigator.getUserMedia ({audio: true},
     function(stream) {
