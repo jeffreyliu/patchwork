@@ -157,6 +157,7 @@ attempt.spn.onaudioprocess = function() {
       residual.spectrum[playheadFrame][i] = (attempt.spectrum[playheadFrame][i] - target.spectrum[playheadFrame][i]) / 255;
       residual.error[playheadFrame] += Math.pow(residual.spectrum[playheadFrame][i], 2);
     }
+    residual.error[playheadFrame] /= frequencyBinCount;
     attempt.drawSpectrum();
     residual.drawSpectrum();
     // residual.drawSummary();
