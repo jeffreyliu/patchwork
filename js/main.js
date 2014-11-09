@@ -9,6 +9,7 @@ var frequencyBinCount;
 var smoothingTimeConstant = 0.0;
 var minDecibels = -110;
 var maxDecibles = -10;
+var playheadFrame = 0;
 
 
 //   ______                      __ 
@@ -23,6 +24,9 @@ var target = {};
 
 // audio buffer for target sample
 target.audioBuffer = null;
+
+// Number of frames for the buffer
+target.numFrames = null;
 
 // audio source for target sample, e.g., a buffer source node
 target.source = null;
@@ -55,6 +59,8 @@ target.spn.onaudioprocess = function() {
   target.analyser.getByteFrequencyData(target.freq);
   target.trends.volume.push(dsp.volume(target.freq));
   target.trends.centroid.push(dsp.centroid(target.freq));
+  target.numFrames = Math.ceil(target.audioBuffer.length/target.audioBuffer.sampleRate);
+  playheadFrame = playheadFrame + 1;
 }
 
 // call this function when updating targetAudioBuffer, e.g., when loading a new target sample
@@ -80,6 +86,7 @@ function playTargetAudioBuffer(process) {
     target.trends.centroid = [];
     target.source.connect(target.spn);
     target.spn.connect(audioContext.destination); // connect to destination, else it isn't called
+
   } else {
     target.processing = false;
   }
